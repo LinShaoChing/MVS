@@ -1,2 +1,7 @@
-It is the initial version.
-The code has not been modified.
+Here is branch "feature_1".
+The branch attemp to achieve better result by modifing Cost Metric.
+
+Version: 0.0
+Describe:
+	The same with the initial one.
+
