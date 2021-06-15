@@ -1,2 +1,2 @@
-It is the initial version.
-The code has not been modified.
+This version is for testing.
+Test for if git works.
