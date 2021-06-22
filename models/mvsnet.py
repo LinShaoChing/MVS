@@ -111,25 +111,24 @@ class MVSNet(nn.Module):
 
         # step 2. differentiable homograph, build cost volume
         ref_volume = ref_feature.unsqueeze(2).repeat(1, 1, num_depth, 1, 1)
-        volume_sum = ref_volume
-        volume_sq_sum = ref_volume ** 2
-        del ref_volume
+        
+        # create a zero cost volume
+        volume_sum = ref_volume - ref_volume
+
+
         for src_fea, src_proj in zip(src_features, src_projs):
             # warpped features
             warped_volume = homo_warping(src_fea, src_proj, ref_proj, depth_values)
             if self.training:
-                volume_sum = volume_sum + warped_volume
-                volume_sq_sum = volume_sq_sum + warped_volume ** 2
+                # let ref and source volume compute MSE
+                volume_sum += (ref_volume - warped_volume)**2
             else:
-                # TODO: this is only a temporal solution to save memory, better way?
-                volume_sum += warped_volume
-                volume_sq_sum += warped_volume.pow_(2)  # the memory of warped_volume has been modified
+                volume_sum += (ref_volume - warped_volume)**2
             del warped_volume
-        # aggregate multiple feature volumes by variance
-        volume_variance = volume_sq_sum.div_(num_views).sub_(volume_sum.div_(num_views).pow_(2))
+      
 
         # step 3. cost volume regularization
-        cost_reg = self.cost_regularization(volume_variance)
+        cost_reg = self.cost_regularization(volume_sum)
         # cost_reg = F.upsample(cost_reg, [num_depth * 4, img_height, img_width], mode='trilinear')
         cost_reg = cost_reg.squeeze(1)
         prob_volume = F.softmax(cost_reg, dim=1)
