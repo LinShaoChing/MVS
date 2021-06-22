@@ -1,7 +1,12 @@
 Here is branch "feature_1".
 The branch attemp to achieve better result by modifing Cost Metric.
 
-Version: 0.0
+Version: 06.15.2021
 Describe:
 	The same with the initial one.
 
+
+Version: 06.23.2021
+Describe:
+	Modify the code to (Cost Metric=MSE).
+	I am going to run the result at (input_image=3 , 5) and (numdepth=160)
