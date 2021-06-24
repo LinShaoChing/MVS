@@ -51,18 +51,21 @@ class MVSDataset(Dataset):
         # intrinsics: line [7-10), 3x3 matrix
         intrinsics = np.fromstring(' '.join(lines[7:10]), dtype=np.float32, sep=' ').reshape((3, 3))
         intrinsics[:2, :] /= 4
+        intrinsics[0] *= 640/1600
+        intrinsics[1] *= 512/1200
         # depth_min & depth_interval: line 11
         depth_min = float(lines[11].split()[0])
         depth_interval = float(lines[11].split()[1]) * self.interval_scale
         return intrinsics, extrinsics, depth_min, depth_interval
 
     def read_img(self, filename):
-        img = Image.open(filename)
+        # img = Image.open(filename)
+        img = Image.open(filename).resize((640, 512), Image.BILINEAR)
         # scale 0~255 to 0~1
         np_img = np.array(img, dtype=np.float32) / 255.
-        assert np_img.shape[:2] == (1200, 1600)
+        # assert np_img.shape[:2] == (1200, 1600)
         # crop to (1184, 1600)
-        np_img = np_img[:-16, :]  # do not need to modify intrinsics if cropping the bottom part
+        # np_img = np_img[:-16, :]  # do not need to modify intrinsics if cropping the bottom part
         return np_img
 
     def read_depth(self, filename):

@@ -29,7 +29,7 @@ parser.add_argument('--testpath', help='testing data path')
 parser.add_argument('--testlist', help='testing scan list')
 
 parser.add_argument('--batch_size', type=int, default=1, help='testing batch size')
-parser.add_argument('--numdepth', type=int, default=192, help='the number of depth values')
+parser.add_argument('--numdepth', type=int, default=160, help='the number of depth values')
 parser.add_argument('--interval_scale', type=float, default=1.06, help='the depth interval scale')
 
 parser.add_argument('--loadckpt', default=None, help='load a specific checkpoint')
@@ -58,7 +58,8 @@ def read_camera_parameters(filename):
 
 # read an image
 def read_img(filename):
-    img = Image.open(filename)
+    # img = Image.open(filename)
+    img = Image.open(filename).resize((640, 512), Image.BILINEAR)
     # scale 0~255 to 0~1
     np_img = np.array(img, dtype=np.float32) / 255.
     return np_img
@@ -106,6 +107,8 @@ def save_depth():
     state_dict = torch.load(args.loadckpt)
     model.load_state_dict(state_dict['model'])
     model.eval()
+
+    
 
     with torch.no_grad():
         for batch_idx, sample in enumerate(TestImgLoader):
@@ -265,7 +268,8 @@ def filter_depth(scan_folder, out_folder, plyfilename):
         valid_points = final_mask
         print("valid_points", valid_points.mean())
         x, y, depth = x[valid_points], y[valid_points], depth_est_averaged[valid_points]
-        color = ref_img[1:-16:4, 1::4, :][valid_points]  # hardcoded for DTU dataset
+        # color = ref_img[1:-16:4, 1::4, :][valid_points]  # hardcoded for DTU dataset
+        color = ref_img[::4, ::4, :][valid_points]
         xyz_ref = np.matmul(np.linalg.inv(ref_intrinsics),
                             np.vstack((x, y, np.ones_like(x))) * depth)
         xyz_world = np.matmul(np.linalg.inv(ref_extrinsics),
@@ -299,7 +303,7 @@ def filter_depth(scan_folder, out_folder, plyfilename):
 
 if __name__ == '__main__':
     # step1. save all the depth maps and the masks in outputs directory
-    # save_depth()
+    save_depth()
 
     with open(args.testlist) as f:
         scans = f.readlines()
