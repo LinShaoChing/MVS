@@ -53,6 +53,8 @@ def read_camera_parameters(filename):
     intrinsics = np.fromstring(' '.join(lines[7:10]), dtype=np.float32, sep=' ').reshape((3, 3))
     # TODO: assume the feature is 1/4 of the original image size
     intrinsics[:2, :] /= 4
+    intrinsics[0] *= 640/1600
+    intrinsics[1] *= 512/1200
     return intrinsics, extrinsics
 
 
@@ -253,14 +255,18 @@ def filter_depth(scan_folder, out_folder, plyfilename):
                                                                                     photo_mask.mean(),
                                                                                     geo_mask.mean(), final_mask.mean()))
 
-        if args.display:
+        if args.display or True:
             import cv2
+            # TODO: Let depthmap can be wrote as file
+            
             cv2.imshow('ref_img', ref_img[:, :, ::-1])
             cv2.imshow('ref_depth', ref_depth_est / 800)
             cv2.imshow('ref_depth * photo_mask', ref_depth_est * photo_mask.astype(np.float32) / 800)
             cv2.imshow('ref_depth * geo_mask', ref_depth_est * geo_mask.astype(np.float32) / 800)
             cv2.imshow('ref_depth * mask', ref_depth_est * final_mask.astype(np.float32) / 800)
-            cv2.waitKey(0)
+            while True:
+                if 13 == cv2.waitKey(0):
+                    break
 
         height, width = depth_est_averaged.shape[:2]
         x, y = np.meshgrid(np.arange(0, width), np.arange(0, height))
@@ -303,7 +309,7 @@ def filter_depth(scan_folder, out_folder, plyfilename):
 
 if __name__ == '__main__':
     # step1. save all the depth maps and the masks in outputs directory
-    save_depth()
+    # save_depth()
 
     with open(args.testlist) as f:
         scans = f.readlines()

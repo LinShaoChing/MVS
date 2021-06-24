@@ -1,12 +1,26 @@
 Here is branch "feature_1".
 The branch attemp to achieve better result by modifing Cost Metric.
 
-Version: 06.15.2021
-Describe:
-	The same with the initial one.
+------
 
+Version: 06.25.2021
+Describe:
+	-Modify dtu_yao_eval.py to avoid the problem, out of memory due to input images are too large. I got solution from https://github.com/xy-guo/MVSNet_pytorch/issues/3.
+	-Modify eval.py and let the code can show the depth map fusion result.
+	-TO DO: Let depthmap can be wrote as png file.
+
+------
 
 Version: 06.23.2021
 Describe:
 	Modify the code to (Cost Metric=MSE).
 	I am going to run the result at (input_image=3 , 5) and (numdepth=160)
+
+------
+
+Version: 06.15.2021
+Describe:
+	The same with the initial one.
+
+
+
