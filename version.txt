@@ -1,6 +1,13 @@
 Here is branch "feature_1".
 The branch attemp to achieve better result by modifing Cost Metric.
 
+
+------
+
+Version: 06.27.2021
+Describe:
+	-Add TODO.txt file.
+
 ------
 
 Version: 06.25.2021
